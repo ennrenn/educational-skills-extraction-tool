@@ -1,0 +1,41 @@
+{
+  "name": "educational-skills-extraction-tool",
+  "version": "1.0.0",
+  "description": "Tool to extract skills from educational program text",
+  "homepage": "https://ennrenn.github.io/educational-skills-extraction-tool",
+  "keywords": ["education", "skills", "nlp", "text analysis"],
+  "main": "src/index.js",
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-scripts": "5.0.1",
+    "papaparse": "5.4.1",
+    "lodash": "4.17.21",
+    "tailwindcss": "3.3.3",
+    "postcss": "8.4.31",
+    "autoprefixer": "10.4.16"
+  },
+  "devDependencies": {
+    "gh-pages": "5.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
