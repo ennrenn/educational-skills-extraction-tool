@@ -426,4 +426,103 @@ class SkillsExtractionTool {
       percentWithSkills: ((statementsWithSkills / results.length) * 100).toFixed(2),
       avgSkillsPerStatement: avgSkillsPerStatement.toFixed(2),
       totalSkillsMentioned,
-      uniqueSkillsMentioned: Object.keys(skill
+      uniqueSkillsMentioned: Object.keys(skilluniqueSkillsMentioned: Object.keys(skillFrequency).length,
+      avgQualityScore: avgQualityScore.toFixed(2),
+      typeStats,
+      topSkills
+    };
+    
+    return {
+      results,
+      summary
+    };
+  }
+  
+  /**
+   * Generate a highlighted HTML representation of a statement with matched skills
+   * @param {Object} analysisResult - The result from extractSkillsFromStatement
+   * @returns {string} - HTML string with highlighted skills
+   */
+  generateHighlightedHTML(analysisResult) {
+    if (!analysisResult.statement || !analysisResult.matchedSkills || !analysisResult.matchedSkills.length) {
+      return `<p>${analysisResult.statement || ''}</p>`;
+    }
+    
+    const statementWords = this.normalizeText(analysisResult.statement).split(' ');
+    
+    // Create a map of positions to skill information
+    const positionMap = new Map();
+    
+    analysisResult.matchedSkills.forEach(skill => {
+      const { start, end } = skill.position;
+      for (let i = start; i < end; i++) {
+        positionMap.set(i, {
+          isStart: i === start,
+          isEnd: i === end - 1,
+          skill: skill.skill,
+          type: skill.type,
+          words: skill.words,
+          specificity: skill.specificity
+        });
+      }
+    });
+    
+    // Generate HTML with highlights
+    let html = '<p>';
+    let isInsideHighlight = false;
+    
+    statementWords.forEach((word, index) => {
+      const skillInfo = positionMap.get(index);
+      
+      if (skillInfo && skillInfo.isStart) {
+        // Start of a skill - determine highlight color based on type/specificity
+        const opacity = Math.min(0.9, 0.3 + (skillInfo.specificity * 0.7));
+        const bgColor = skillInfo.words > 1 ? `rgba(0, 128, 255, ${opacity})` : `rgba(255, 165, 0, ${opacity})`;
+        
+        html += `<span class="skill-highlight" style="background-color: ${bgColor};" title="${skillInfo.skill}">`;
+        isInsideHighlight = true;
+      }
+      
+      // Add the word
+      html += word;
+      
+      if (skillInfo && skillInfo.isEnd) {
+        // End of a skill
+        html += '</span>';
+        isInsideHighlight = false;
+      }
+      
+      // Add space between words (except for the last word)
+      if (index < statementWords.length - 1) {
+        html += ' ';
+      }
+    });
+    
+    html += '</p>';
+    return html;
+  }
+  
+  /**
+   * Generate a quality rating description based on the quality score
+   * @param {string|number} qualityScore - The quality score
+   * @returns {string} - Quality rating description
+   */
+  getQualityRating(qualityScore) {
+    const score = parseFloat(qualityScore);
+    
+    if (score <= 0.25) {
+      return "Poor quality - few skills, mostly generic";
+    } else if (score <= 0.50) {
+      return "Basic quality - some skills, mix of generic and specific";
+    } else if (score <= 0.75) {
+      return "Good quality - good skills coverage, more specific skills";
+    } else if (score <= 1.25) {
+      return "Very good quality - high skills coverage, mostly specific skills";
+    } else {
+      return "Excellent quality - exceptional skills coverage and specificity";
+    }
+  }
+}
+
+export default SkillsExtractionTool;
+                                         
